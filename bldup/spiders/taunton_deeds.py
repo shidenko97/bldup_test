@@ -8,22 +8,10 @@ class TauntonDeeds(scrapy.Spider):
     """tauntondeeds.com apartments spider"""
 
     name = "taunton_deeds"
-    domain = "http://www.tauntondeeds.com/Searches/ImageSearch.aspx"
+    start_urls = ["http://www.tauntondeeds.com/Searches/ImageSearch.aspx"]
     "Page for parse"
 
-    def start_requests(self) -> scrapy.Request:
-        """
-        First load of page (without parameters)
-        :return: Content of page in scrapy.Request object
-        :rtype: scrapy.Request
-        """
-
-        yield scrapy.Request(
-            url="http://www.tauntondeeds.com/Searches/ImageSearch.aspx",
-            callback=self.get_page
-        )
-
-    def get_page(self, response: scrapy.Request) -> scrapy.FormRequest:
+    def parse(self, response: scrapy.Request) -> scrapy.FormRequest:
         """
         Load the page with parameters for getting table size
         :param response: Object of page
@@ -33,7 +21,7 @@ class TauntonDeeds(scrapy.Spider):
         """
 
         yield scrapy.FormRequest(
-            url='http://www.tauntondeeds.com/Searches/ImageSearch.aspx',
+            url=response.url,
             formdata={
                 "ctl00$cphMainContent$txtLCEndDate$dateInput":
                     "2020-12-31-00-00-00",
@@ -63,7 +51,7 @@ class TauntonDeeds(scrapy.Spider):
         # Load each page for parsing
         for page in range(1, len(pager.css("td")) + 1):
             yield scrapy.FormRequest(
-                url='http://www.tauntondeeds.com/Searches/ImageSearch.aspx',
+                url=response.url,
                 formdata={
                     "ctl00_cphMainContent_txtLCSTartDate_dateInput_text":
                         "1/1/2020",
